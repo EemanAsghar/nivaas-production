@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
 
   // Notify all admins
   const admins = await prisma.user.findMany({ where: { role: 'ADMIN' }, select: { id: true } });
-  await Promise.all(admins.map(a =>
+  await Promise.all(admins.map((a: { id: string }) =>
     notify(a.id, 'New inspection request', `${type.replace('_', '-')} inspection requested for ${listing.title}`, '/admin')
   ));
 
