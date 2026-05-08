@@ -1,317 +1,182 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import TopBar from '@/components/ui/TopBar';
-import OnboardingBanner from '@/components/ui/OnboardingBanner';
-import Logo from '@/components/ui/Logo';
-import Icon from '@/components/ui/Icon';
-import TrustBadge from '@/components/ui/TrustBadge';
-import { useAuth } from '@/components/auth/AuthProvider';
-import { CITIES } from '@/lib/data';
+import { useEffect, useState } from 'react';
 
-type ApiListing = {
-  id: string;
-  title: string;
-  locality: string;
-  city: string;
-  rentAmount: number;
-  rooms: number;
-  bathrooms: number;
-  areaMarla?: number;
-  areaSqft?: number;
-  ownerVerified: boolean;
-  isBoosted: boolean;
-  createdAt: string;
-  photos: { url: string; isCover: boolean }[];
-  landlord: { name: string; verificationTier: string };
-};
-
-function badgesFor(l: ApiListing): string[] {
-  const b: string[] = [];
-  if (l.landlord.verificationTier === 'VERIFIED') b.push('nadra');
-  if (l.ownerVerified) b.push('owner');
-  if (l.isBoosted) b.push('boost');
-  return b;
-}
-
-function areaStr(l: ApiListing) {
-  if (l.areaMarla) return `${l.areaMarla} marla`;
-  if (l.areaSqft) return `${l.areaSqft.toLocaleString()} sqft`;
-  return '—';
-}
-
-export default function Home() {
-  const { user } = useAuth();
-  const [searchCity, setSearchCity] = useState('');
-  const [maxRent, setMaxRent] = useState('');
-  const [rooms, setRooms] = useState('');
-  const [featured, setFeatured] = useState<ApiListing[]>([]);
-  const [featuredLoading, setFeaturedLoading] = useState(true);
-  const [cityCounts, setCityCounts] = useState<Record<string, number>>({});
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const [savingId, setSavingId] = useState<string | null>(null);
-
-  function buildSearchUrl() {
-    const p = new URLSearchParams();
-    if (searchCity) p.set('city', searchCity);
-    if (maxRent) p.set('maxRent', maxRent);
-    if (rooms) p.set('rooms', rooms);
-    const qs = p.toString();
-    return qs ? `/search?${qs}` : '/search';
-  }
+export default function ComingSoon() {
+  const [logoDown, setLogoDown] = useState(false);
+  const [showText, setShowText] = useState(false);
+  const [showSub, setShowSub] = useState(false);
 
   useEffect(() => {
-    fetch('/api/listings/counts')
-      .then(r => r.json())
-      .then(d => setCityCounts(d.counts ?? {}))
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    fetch('/api/saved')
-      .then(r => r.json())
-      .then(d => setSavedIds(new Set((d.listings ?? []).map((l: { id: string }) => l.id))))
-      .catch(() => {});
-  }, [user]);
-
-  async function toggleSave(e: React.MouseEvent, listingId: string) {
-    e.preventDefault();
-    if (!user || savingId === listingId) return;
-    setSavingId(listingId);
-    const isSaved = savedIds.has(listingId);
-    setSavedIds(prev => { const n = new Set(prev); isSaved ? n.delete(listingId) : n.add(listingId); return n; });
-    await fetch(`/api/listings/${listingId}/save`, { method: isSaved ? 'DELETE' : 'POST' }).catch(() => {
-      setSavedIds(prev => { const n = new Set(prev); isSaved ? n.add(listingId) : n.delete(listingId); return n; });
-    });
-    setSavingId(null);
-  }
-
-  useEffect(() => {
-    setFeaturedLoading(true);
-    fetch('/api/listings?limit=6&sort=newest')
-      .then(r => r.json())
-      .then(d => setFeatured(d.listings ?? []))
-      .catch(() => setFeatured([]))
-      .finally(() => setFeaturedLoading(false));
+    const t1 = setTimeout(() => setLogoDown(true), 300);
+    const t2 = setTimeout(() => setShowText(true), 1100);
+    const t3 = setTimeout(() => setShowSub(true), 1700);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
   return (
-    <div className="n-root">
-      <TopBar />
-      <OnboardingBanner />
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
 
-      {/* ── Hero ── */}
-      <div style={{
-        background: 'var(--n-bg)',
-        borderBottom: '1px solid var(--n-line)',
-        padding: 'clamp(48px, 7vw, 88px) 40px clamp(40px, 5vw, 64px)',
-        textAlign: 'center',
-      }}>
-        <div className="n-chip" style={{ marginBottom: 20, display: 'inline-flex' }}>
-          <Icon name="shield" style={{ width: 12, height: 12 }} /> Pakistan&apos;s verified rental marketplace
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+          background: #0F2340;
+          font-family: 'Inter Tight', system-ui, sans-serif;
+          -webkit-font-smoothing: antialiased;
+        }
+
+        .wrapper {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 40px 24px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* Background glow */
+        .wrapper::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -60%);
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(18,166,140,0.12) 0%, transparent 70%);
+          pointer-events: none;
+        }
+
+        .logo-wrap {
+          transform: translateY(-120px);
+          opacity: 0;
+          transition: transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-bottom: 48px;
+        }
+        .logo-wrap.down {
+          transform: translateY(0);
+          opacity: 1;
+        }
+
+        .logo-icon {
+          flex-shrink: 0;
+        }
+
+        .logo-text {
+          font-weight: 700;
+          font-size: 28px;
+          letter-spacing: -0.04em;
+          color: #F8F4EE;
+          line-height: 1;
+        }
+
+        .coming-soon {
+          font-family: 'Instrument Serif', serif;
+          font-size: clamp(56px, 10vw, 100px);
+          line-height: 0.95;
+          letter-spacing: -0.03em;
+          color: #F8F4EE;
+          text-align: center;
+          opacity: 0;
+          transform: translateY(16px);
+          transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .coming-soon em {
+          font-style: italic;
+          color: #12A68C;
+        }
+        .coming-soon.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .sub {
+          margin-top: 24px;
+          font-size: 16px;
+          color: #8aabb8;
+          text-align: center;
+          max-width: 380px;
+          line-height: 1.65;
+          opacity: 0;
+          transform: translateY(10px);
+          transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .sub.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .divider {
+          width: 40px;
+          height: 2px;
+          background: #12A68C;
+          border-radius: 2px;
+          margin: 32px auto 0;
+          opacity: 0;
+          transition: opacity 0.5s ease 0.2s;
+        }
+        .divider.visible { opacity: 1; }
+
+        .dots {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+        .dot {
+          position: absolute;
+          border-radius: 999px;
+          background: rgba(18,166,140,0.15);
+          animation: float 8s ease-in-out infinite;
+        }
+        .dot:nth-child(1) { width: 300px; height: 300px; top: -80px; right: -60px; animation-delay: 0s; }
+        .dot:nth-child(2) { width: 200px; height: 200px; bottom: -40px; left: -60px; animation-delay: 2s; }
+        .dot:nth-child(3) { width: 120px; height: 120px; bottom: 20%; right: 10%; animation-delay: 4s; background: rgba(232,150,58,0.08); }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-18px); }
+        }
+      `}</style>
+
+      <div className="wrapper">
+        {/* Floating bg blobs */}
+        <div className="dots">
+          <div className="dot" />
+          <div className="dot" />
+          <div className="dot" />
         </div>
-        <h1 className="n-display" style={{
-          fontSize: 'clamp(36px, 5.5vw, 72px)', lineHeight: 1.04, letterSpacing: '-0.03em',
-          color: 'var(--n-ink)', margin: '0 auto 18px', maxWidth: 820,
-        }}>
-          Rent Kar Ghar —{' '}
-          <em style={{ color: 'var(--n-accent)', fontStyle: 'italic' }}>trusted rentals</em>
+
+        {/* Logo drops down */}
+        <div className={`logo-wrap ${logoDown ? 'down' : ''}`}>
+          <svg className="logo-icon" width="38" height="42" viewBox="0 0 32 36" fill="none">
+            <path d="M16 2L2 13H6V32H26V13H30L16 2Z" fill="#12A68C" fillOpacity="0.18" stroke="#12A68C" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M12 18H16C18.2 18 20 19.8 20 22C20 24.2 18.2 26 16 26H12V18Z" stroke="#F8F4EE" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+            <line x1="12" y1="18" x2="12" y2="30" stroke="#F8F4EE" strokeWidth="1.8" strokeLinecap="round"/>
+            <path d="M16 26L20 30" stroke="#F8F4EE" strokeWidth="1.8" strokeLinecap="round"/>
+          </svg>
+          <span className="logo-text">Rent Kar Ghar</span>
+        </div>
+
+        {/* Coming soon text */}
+        <h1 className={`coming-soon ${showText ? 'visible' : ''}`}>
+          Coming <em>soon.</em>
         </h1>
-        <p style={{ fontSize: 16, color: 'var(--n-muted)', maxWidth: 480, margin: '0 auto 36px', lineHeight: 1.65 }}>
-          NADRA-verified landlords, owner-confirmed listings, and professional inspections — across Punjab&apos;s fastest-growing cities.
+
+        <div className={`divider ${showSub ? 'visible' : ''}`} />
+
+        <p className={`sub ${showSub ? 'visible' : ''}`}>
+          Pakistan&apos;s verified rental marketplace is almost here —
+          NADRA-verified landlords, real inspections, zero middlemen.
         </p>
-
-        {/* Search bar — desktop */}
-        <div className="n-hide-mobile" style={{
-          maxWidth: 720, margin: '0 auto',
-          background: 'var(--n-surface)',
-          border: '1px solid var(--n-line)',
-          borderRadius: 16, padding: 6,
-          display: 'grid', gridTemplateColumns: '1.2fr 0.9fr 0.8fr auto', gap: 0,
-          boxShadow: '0 4px 24px rgba(21,18,14,0.08)',
-        }}>
-          <div style={{ padding: '10px 18px', borderRight: '1px solid var(--n-line)' }}>
-            <div style={{ fontSize: 10, fontFamily: 'var(--mono)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--n-muted-2)', marginBottom: 4 }}>City</div>
-            <select value={searchCity} onChange={e => setSearchCity(e.target.value)}
-              style={{ width: '100%', border: 'none', outline: 'none', background: 'transparent', color: 'var(--n-ink)', fontFamily: 'inherit', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}>
-              <option value="">All cities</option>
-              {CITIES.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
-            </select>
-          </div>
-          <div style={{ padding: '10px 18px', borderRight: '1px solid var(--n-line)' }}>
-            <div style={{ fontSize: 10, fontFamily: 'var(--mono)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--n-muted-2)', marginBottom: 4 }}>Max rent</div>
-            <select value={maxRent} onChange={e => setMaxRent(e.target.value)}
-              style={{ width: '100%', border: 'none', outline: 'none', background: 'transparent', color: 'var(--n-ink)', fontFamily: 'inherit', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}>
-              <option value="">Any budget</option>
-              <option value="20000">Under ₨20k</option>
-              <option value="40000">Under ₨40k</option>
-              <option value="60000">Under ₨60k</option>
-              <option value="80000">Under ₨80k</option>
-              <option value="120000">Under ₨1.2L</option>
-            </select>
-          </div>
-          <div style={{ padding: '10px 18px' }}>
-            <div style={{ fontSize: 10, fontFamily: 'var(--mono)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--n-muted-2)', marginBottom: 4 }}>Bedrooms</div>
-            <select value={rooms} onChange={e => setRooms(e.target.value)}
-              style={{ width: '100%', border: 'none', outline: 'none', background: 'transparent', color: 'var(--n-ink)', fontFamily: 'inherit', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}>
-              <option value="">Any</option>
-              <option value="1">1+</option>
-              <option value="2">2+</option>
-              <option value="3">3+</option>
-              <option value="4">4+</option>
-            </select>
-          </div>
-          <Link href={buildSearchUrl()} className="n-btn accent" style={{ height: 'auto', padding: '0 28px', margin: 0, justifyContent: 'center', borderRadius: 11, fontSize: 15 }}>
-            <Icon name="search" /> Search
-          </Link>
-        </div>
-
-        {/* Mobile search */}
-        <Link href={buildSearchUrl()} className="n-btn accent n-show-mobile" style={{ display: 'none', justifyContent: 'center', height: 50, fontSize: 16, borderRadius: 14, margin: '0 auto', padding: '0 32px' }}>
-          <Icon name="search" /> Search{searchCity ? ` in ${searchCity}` : ''}
-        </Link>
-
-        {/* Quick filter chips */}
-        <div style={{ marginTop: 18, display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {[
-            { label: 'NADRA verified', q: '?verifiedOnly=true' },
-            { label: 'Furnished', q: '?furnishing=Furnished' },
-            { label: 'Under ₨30k', q: '?maxRent=30000' },
-            { label: 'Family homes', q: '?type=House' },
-            { label: 'Studios', q: '?type=Studio' },
-          ].map(t => (
-            <Link key={t.label} href={`/search${t.q}`} className="n-chip" style={{ cursor: 'pointer', fontSize: 13, height: 30, padding: '0 14px' }}>
-              {t.label}
-            </Link>
-          ))}
-        </div>
       </div>
-
-      {/* ── Featured listings ── */}
-      <div style={{ padding: '40px 40px 48px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
-          <div>
-            <div className="n-mono" style={{ color: 'var(--n-muted)' }}>Latest listings</div>
-            <h2 className="n-display" style={{ fontSize: 36, margin: '4px 0 0', letterSpacing: '-0.02em' }}>New this week.</h2>
-          </div>
-          <Link href="/search" className="n-btn ghost sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            Browse all <Icon name="arrow" />
-          </Link>
-        </div>
-
-        {featuredLoading ? (
-          <div className="n-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-            {[0, 1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="n-card" style={{ height: 340, opacity: 0.35 }} />
-            ))}
-          </div>
-        ) : featured.length === 0 ? (
-          <div className="n-card" style={{ padding: 56, textAlign: 'center' }}>
-            <Icon name="home" className="n-ico xl" style={{ color: 'var(--n-muted)', margin: '0 auto 14px', display: 'block' }} />
-            <div style={{ color: 'var(--n-muted)', marginBottom: 20, fontSize: 15 }}>No listings yet — be the first.</div>
-            <Link href="/list-property" className="n-btn primary sm" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <Icon name="plus" /> List a property
-            </Link>
-          </div>
-        ) : (
-          <div className="n-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-            {featured.map(p => (
-              <Link key={p.id} href={`/property/${p.id}`} className="n-card" style={{ overflow: 'hidden', padding: 0, display: 'block', textDecoration: 'none' }}>
-                <div style={{ position: 'relative', height: 240, background: p.photos[0] ? `url(${p.photos[0].url}) center/cover` : 'var(--n-surface-2)' }}>
-                  {!p.photos[0] && (
-                    <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
-                      <Icon name="camera" className="n-ico xl" style={{ color: 'var(--n-muted)' }} />
-                    </div>
-                  )}
-                  {p.photos[0] && (
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%)' }} />
-                  )}
-                  <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 5 }}>
-                    {badgesFor(p).includes('nadra') && <TrustBadge kind="nadra" size="sm" />}
-                    {badgesFor(p).includes('boost') && <TrustBadge kind="boost" size="sm" />}
-                  </div>
-                  <button
-                    onClick={e => toggleSave(e, p.id)}
-                    style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.92)', display: 'grid', placeItems: 'center', cursor: 'pointer', color: savedIds.has(p.id) ? 'var(--n-danger)' : 'var(--n-muted)' }}
-                  >
-                    <Icon name="heart" />
-                  </button>
-                  {p.photos[0] && (
-                    <div style={{ position: 'absolute', bottom: 14, left: 14 }}>
-                      <span className="n-display" style={{ fontSize: 22, color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>₨ {p.rentAmount.toLocaleString()}</span>
-                      <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginLeft: 4 }}>/mo</span>
-                    </div>
-                  )}
-                </div>
-                <div style={{ padding: '16px 18px' }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em', marginBottom: 4, lineHeight: 1.3 }}>{p.title}</div>
-                  <div style={{ fontSize: 13, color: 'var(--n-muted)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Icon name="pin" style={{ width: 12, height: 12 }} className="n-ico" />{p.locality}, {p.city}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: 'var(--n-muted)', fontSize: 13 }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Icon name="bed" /> {p.rooms} bed</span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Icon name="bath" /> {p.bathrooms} bath</span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Icon name="square" /> {areaStr(p)}</span>
-                    {!p.photos[0] && (
-                      <span className="n-display" style={{ marginLeft: 'auto', fontSize: 20 }}>₨ {p.rentAmount.toLocaleString()}<span style={{ fontSize: 13, fontFamily: 'inherit', color: 'var(--n-muted)', fontWeight: 400 }}>/mo</span></span>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* ── Browse by city ── */}
-      <div style={{ padding: '0 40px 48px', borderTop: '1px solid var(--n-line)' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', margin: '40px 0 18px' }}>
-          <div>
-            <div className="n-mono" style={{ color: 'var(--n-muted)' }}>Browse by city</div>
-            <h2 className="n-display" style={{ fontSize: 36, margin: '4px 0 0', letterSpacing: '-0.02em' }}>Six cities, fully covered.</h2>
-          </div>
-          <Link href="/search" style={{ fontSize: 14, color: 'var(--n-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            All listings <Icon name="arrow" />
-          </Link>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
-          {CITIES.map(c => (
-            <Link
-              key={c.name}
-              href={`/search?city=${encodeURIComponent(c.name)}`}
-              className="n-card hoverable"
-              style={{ padding: 0, overflow: 'hidden', display: 'block', textDecoration: 'none' }}
-            >
-              <div style={{ height: 100, background: `url(${c.hero}) center/cover`, position: 'relative' }}>
-                <span className="n-chip" style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(21,18,14,0.7)', color: '#f6f3ee', border: 'none', backdropFilter: 'blur(6px)', fontSize: 11 }}>
-                  Tier {c.tier}
-                </span>
-              </div>
-              <div style={{ padding: '10px 12px 12px' }}>
-                <div style={{ fontSize: 14, fontWeight: 500 }}>{c.name}</div>
-                <div className="n-mono" style={{ color: 'var(--n-muted)', marginTop: 3, fontSize: 10 }}>{(cityCounts[c.name] ?? 0).toLocaleString()} listings</div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Footer ── */}
-      <div style={{ padding: '28px 40px', color: 'var(--n-muted)', fontSize: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <Logo size={16} />
-          <span>© 2026 Rent Kar Ghar · A verified rental platform for Pakistan</span>
-        </div>
-        <div style={{ display: 'flex', gap: 24 }}>
-          <Link href="/about" style={{ color: 'var(--n-muted)' }}>About</Link>
-          <Link href="/contact" style={{ color: 'var(--n-muted)' }}>Contact</Link>
-          <Link href="/terms" style={{ color: 'var(--n-muted)' }}>Terms</Link>
-          <Link href="/privacy" style={{ color: 'var(--n-muted)' }}>Privacy</Link>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
