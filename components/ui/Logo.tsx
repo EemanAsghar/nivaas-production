@@ -6,19 +6,37 @@ interface LogoProps {
 
 export default function Logo({ size = 22 }: LogoProps) {
   const h = size;
-  const iconW = Math.round(h * 0.9);
+  const w = Math.round(h * 0.98);
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-      {/* R-house icon */}
-      <svg width={iconW} height={h} viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* House roof */}
-        <path d="M16 2L2 13H6V32H26V13H30L16 2Z" fill="#12A68C" fillOpacity="0.18" stroke="#12A68C" strokeWidth="2" strokeLinejoin="round" />
-        {/* R letterform inside house */}
-        <path d="M12 18H16C18.2 18 20 19.8 20 22C20 24.2 18.2 26 16 26H12V18Z" stroke="#F8F4EE" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-        <line x1="12" y1="18" x2="12" y2="30" stroke="#F8F4EE" strokeWidth="1.8" strokeLinecap="round"/>
-        <path d="M16 26L20 30" stroke="#F8F4EE" strokeWidth="1.8" strokeLinecap="round"/>
+      {/* R-house mark — matches actual brand logo */}
+      <svg width={w} height={h} viewBox="0 0 86 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Left stem → roof peak → right wall */}
+        <polyline
+          points="12,82 12,36 43,6 74,28 74,56"
+          stroke="#4A94CB"
+          strokeWidth="13"
+          fill="none"
+          strokeLinecap="square"
+          strokeLinejoin="miter"
+        />
+        {/* R bowl arc */}
+        <path
+          d="M 74 56 Q 74 72 56 72 L 12 72"
+          stroke="#4A94CB"
+          strokeWidth="13"
+          fill="none"
+          strokeLinecap="square"
+        />
+        {/* R diagonal leg */}
+        <line x1="56" y1="72" x2="76" y2="84" stroke="#4A94CB" strokeWidth="13" strokeLinecap="square"/>
+        {/* Window — 2×2 panes */}
+        <rect x="46" y="28" width="9" height="9" fill="#4A94CB"/>
+        <rect x="57" y="28" width="9" height="9" fill="#4A94CB"/>
+        <rect x="46" y="39" width="9" height="9" fill="#4A94CB"/>
+        <rect x="57" y="39" width="9" height="9" fill="#4A94CB"/>
       </svg>
-      {/* Brand name */}
       <span style={{
         fontFamily: "'Inter Tight', system-ui, sans-serif",
         fontWeight: 700,

@@ -1,0 +1,29 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Dark navy background -->
+  <rect width="32" height="32" rx="6" fill="#0F2340"/>
+  <!-- R-house mark (scaled to fit 28x28, offset 2px) -->
+  <!-- Left stem → roof peak → right wall -->
+  <polyline
+    points="6,28 6,13 16,4 26,11 26,20"
+    stroke="#4A94CB"
+    stroke-width="3.5"
+    fill="none"
+    stroke-linecap="square"
+    stroke-linejoin="miter"
+  />
+  <!-- R bowl arc -->
+  <path
+    d="M 26 20 Q 26 25 20 25 L 6 25"
+    stroke="#4A94CB"
+    stroke-width="3.5"
+    fill="none"
+    stroke-linecap="square"
+  />
+  <!-- R leg -->
+  <line x1="20" y1="25" x2="27" y2="29" stroke="#4A94CB" stroke-width="3.5" stroke-linecap="square"/>
+  <!-- Window panes (2x2) -->
+  <rect x="17" y="10" width="3" height="3" fill="#4A94CB"/>
+  <rect x="21" y="10" width="3" height="3" fill="#4A94CB"/>
+  <rect x="17" y="14" width="3" height="3" fill="#4A94CB"/>
+  <rect x="21" y="14" width="3" height="3" fill="#4A94CB"/>
+</svg>
