@@ -1,6 +1,6 @@
 import TopBar from '@/components/ui/TopBar';
 
-export const metadata = { title: 'Privacy Policy — Nivaas' };
+export const metadata = { title: 'Privacy Policy — Rent Kar Ghar' };
 
 const SECTIONS = [
   {
@@ -25,7 +25,7 @@ const SECTIONS = [
   },
   {
     title: '6. Cookies',
-    body: `We use a single authentication cookie (nivaas_token) to maintain your session. We do not use advertising or tracking cookies. You may clear this cookie at any time to log out.`,
+    body: `We use a single authentication cookie (rkg_token) to maintain your session. We do not use advertising or tracking cookies. You may clear this cookie at any time to log out.`,
   },
   {
     title: '7. Your Rights',
@@ -33,7 +33,7 @@ const SECTIONS = [
   },
   {
     title: '8. Contact Us',
-    body: `For privacy concerns, contact our Data Protection Officer at privacy@nivaas.pk. For urgent identity verification issues, call our helpline at 0800-NIVAAS (64-8227).`,
+    body: `For privacy concerns, contact our Data Protection Officer at privacy@rentkarghar.com. For urgent identity verification issues, call our helpline at 0800-NIVAAS (64-8227).`,
   },
 ];
 

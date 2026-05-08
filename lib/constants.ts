@@ -1,6 +1,6 @@
-export const APP_NAME = 'Nivaas';
-export const APP_TAGLINE = 'Rentals you can actually trust.';
-export const SUPPORT_EMAIL = 'support@nivaas.pk';
+export const APP_NAME = 'Rent Kar Ghar';
+export const APP_TAGLINE = 'Pakistan\'s verified rental marketplace.';
+export const SUPPORT_EMAIL = 'hello@rentkarghar.com';
 
 export const OTP_EXPIRY_MINUTES = 10;
 export const OTP_RATE_LIMIT = 3;

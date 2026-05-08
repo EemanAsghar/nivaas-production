@@ -181,7 +181,7 @@ export default function AdminPage() {
       {/* ─── Sidebar ─── */}
       <div style={{ width: 220, flexShrink: 0, background: 'var(--n-surface)', borderRight: '1px solid var(--n-line)', display: 'flex', flexDirection: 'column', padding: '24px 0' }}>
         <div style={{ padding: '0 20px 24px', borderBottom: '1px solid var(--n-line)', marginBottom: 12 }}>
-          <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: '-0.01em' }}>Nivaas Admin</div>
+          <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: '-0.01em' }}>RKG Admin</div>
           <div style={{ fontSize: 11, fontFamily: 'var(--mono)', color: 'var(--n-muted)', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Control panel</div>
         </div>
         {NAV.map(n => (

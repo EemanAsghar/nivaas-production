@@ -357,7 +357,7 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
               <div style={{ padding: '20px 24px', background: 'var(--n-ink)', color: 'var(--n-bg)', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 18, alignItems: 'center' }}>
                 <Icon name="stamp" className="n-ico xl" />
                 <div>
-                  <div className="n-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>Nivaas Inspection Report</div>
+                  <div className="n-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>Rent Kar Ghar Inspection Report</div>
                   <div className="n-display" style={{ fontSize: 22, marginTop: 2 }}>
                     Utility check — {inspection.checklistItems.filter(i => i.status === 'PASS').length} of {inspection.checklistItems.length} categories pass
                   </div>
@@ -553,7 +553,7 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
                 <Icon name="stamp" /> Request inspection · ₨ 1,800
               </button>
               <a
-                href={`https://wa.me/?text=${encodeURIComponent(`Check out this rental on Nivaas: ${p.title} in ${p.locality}, ${p.city} — ₨${p.rentAmount.toLocaleString()}/month\n\nhttps://nivaas.pk/property/${p.id}`)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(`Check out this rental on Rent Kar Ghar: ${p.title} in ${p.locality}, ${p.city} — ₨${p.rentAmount.toLocaleString()}/month\n\nhttps://rentkarghar.com/property/${p.id}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="n-btn ghost"

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: '404 — Page not found · Nivaas',
+  title: '404 — Page not found · Rent Kar Ghar',
 };
 
 export default function NotFound() {
@@ -29,7 +29,7 @@ export default function NotFound() {
       </div>
 
       <div className="n-mono" style={{ marginTop: 64, color: 'var(--n-muted)', opacity: 0.4, fontSize: 10 }}>
-        Nivaas · Rentals you can actually trust
+        Rent Kar Ghar · Rentals you can actually trust
       </div>
     </div>
   );

@@ -18,7 +18,7 @@ const STEPS = [
   {
     n: '03',
     title: 'Request a professional inspection',
-    body: 'Optional but recommended. A Nivaas inspector visits the property and checks gas, electricity, water, and structure. You get a full report.',
+    body: 'Optional but recommended. A Rent Kar Ghar inspector visits the property and checks gas, electricity, water, and structure. You get a full report.',
     icon: 'stamp' as const,
   },
   {
@@ -34,7 +34,7 @@ const TRUST_FACTORS = [
   { label: 'CNIC uploaded',         points: '+10',    desc: 'CNIC submitted and pending NADRA confirmation.' },
   { label: 'NADRA confirmed',       points: '+25',    desc: 'Identity fully verified with NADRA.' },
   { label: 'Owner-verified listing',points: '+20',    desc: 'Admin has confirmed the landlord owns the property.' },
-  { label: 'Professional inspection',points: '+10',   desc: 'A Nivaas inspector has visited the property.' },
+  { label: 'Professional inspection',points: '+10',   desc: 'A Rent Kar Ghar inspector has visited the property.' },
   { label: '3+ photos uploaded',    points: '+5',     desc: 'Listing has at least 3 real photos.' },
 ];
 
@@ -49,10 +49,10 @@ export default function HowItWorksPage() {
       <div style={{ padding: '64px 40px 48px', maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
         <div className="n-mono" style={{ color: 'var(--n-muted)', marginBottom: 14 }}>Transparency · Trust · No BS</div>
         <h1 className="n-display" style={{ fontSize: 'clamp(48px, 7vw, 84px)', lineHeight: 0.95, letterSpacing: '-0.025em', margin: '0 0 24px' }}>
-          How Nivaas works
+          How Rent Kar Ghar works
         </h1>
         <p style={{ fontSize: 18, color: 'var(--n-muted)', lineHeight: 1.6, maxWidth: 560, margin: '0 auto 36px' }}>
-          A rental platform built for cities that were being ignored — with verified identities, real inspections, and zero middlemen.
+          A rental platform built for Pakistani cities — with verified identities, real inspections, and zero middlemen.
         </p>
         <Link href="/search" className="n-btn accent" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 48, fontSize: 15, padding: '0 28px' }}>
           <Icon name="search" /> Start browsing

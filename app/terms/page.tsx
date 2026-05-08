@@ -1,15 +1,15 @@
 import TopBar from '@/components/ui/TopBar';
 
-export const metadata = { title: 'Terms of Service — Nivaas' };
+export const metadata = { title: 'Terms of Service — Rent Kar Ghar' };
 
 const SECTIONS = [
   {
     title: '1. Acceptance of Terms',
-    body: `By accessing or using Nivaas ("the Platform"), you agree to be bound by these Terms of Service. If you do not agree, please do not use the Platform. These terms apply to all users, including tenants, landlords, inspectors, and visitors.`,
+    body: `By accessing or using Rent Kar Ghar ("the Platform"), you agree to be bound by these Terms of Service. If you do not agree, please do not use the Platform. These terms apply to all users, including tenants, landlords, inspectors, and visitors.`,
   },
   {
     title: '2. Platform Role',
-    body: `Nivaas is a rental marketplace that connects landlords and tenants in Punjab, Pakistan. We do not own, manage, or control any property listed on the Platform. We are not a party to any rental agreement or lease and bear no responsibility for the condition of any listed property.`,
+    body: `Rent Kar Ghar is a rental marketplace that connects landlords and tenants in Punjab, Pakistan. We do not own, manage, or control any property listed on the Platform. We are not a party to any rental agreement or lease and bear no responsibility for the condition of any listed property.`,
   },
   {
     title: '3. User Accounts',
@@ -21,11 +21,11 @@ const SECTIONS = [
   },
   {
     title: '5. Lease Agreements',
-    body: `Digital leases signed through Nivaas constitute legally binding agreements under applicable Pakistani law. Both parties must review terms carefully before signing. Nivaas provides a standard template; users may seek legal counsel before signing.`,
+    body: `Digital leases signed through Rent Kar Ghar constitute legally binding agreements under applicable Pakistani law. Both parties must review terms carefully before signing. Rent Kar Ghar provides a standard template; users may seek legal counsel before signing.`,
   },
   {
     title: '6. Inspections',
-    body: `Inspection services are provided by third-party inspectors assigned by Nivaas. An inspection fee of ₨ 1,800 applies. Reports are for informational purposes only and do not constitute a warranty of property condition.`,
+    body: `Inspection services are provided by third-party inspectors assigned by Rent Kar Ghar. An inspection fee of ₨ 1,800 applies. Reports are for informational purposes only and do not constitute a warranty of property condition.`,
   },
   {
     title: '7. Prohibited Activities',
@@ -33,7 +33,7 @@ const SECTIONS = [
   },
   {
     title: '8. Limitation of Liability',
-    body: `To the maximum extent permitted by law, Nivaas and its affiliates shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Platform. Our total liability shall not exceed the fees paid by you in the 30 days prior to the claim.`,
+    body: `To the maximum extent permitted by law, Rent Kar Ghar and its affiliates shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Platform. Our total liability shall not exceed the fees paid by you in the 30 days prior to the claim.`,
   },
   {
     title: '9. Changes to Terms',

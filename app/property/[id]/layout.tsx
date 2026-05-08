@@ -21,13 +21,13 @@ export async function generateMetadata(
   });
 
   if (!listing) {
-    return { title: 'Property not found — Nivaas' };
+    return { title: 'Property not found — Rent Kar Ghar' };
   }
 
-  const title = `${listing.title} — ₨${listing.rentAmount.toLocaleString()}/mo | Nivaas`;
+  const title = `${listing.title} — ₨${listing.rentAmount.toLocaleString()}/mo | Rent Kar Ghar`;
   const description =
     listing.description?.slice(0, 155) ??
-    `${listing.rooms}-bed ${listing.propertyType.toLowerCase()} for rent in ${listing.locality}, ${listing.city}. Verified listing on Nivaas.`;
+    `${listing.rooms}-bed ${listing.propertyType.toLowerCase()} for rent in ${listing.locality}, ${listing.city}. Verified listing on Rent Kar Ghar.`;
 
   const coverPhoto = listing.photos[0]?.url;
 

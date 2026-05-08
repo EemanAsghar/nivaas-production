@@ -110,17 +110,17 @@ export default function Home() {
         textAlign: 'center',
       }}>
         <div className="n-chip" style={{ marginBottom: 20, display: 'inline-flex' }}>
-          <Icon name="shield" style={{ width: 12, height: 12 }} /> Punjab&apos;s verified rental marketplace
+          <Icon name="shield" style={{ width: 12, height: 12 }} /> Pakistan&apos;s verified rental marketplace
         </div>
         <h1 className="n-display" style={{
           fontSize: 'clamp(36px, 5.5vw, 72px)', lineHeight: 1.04, letterSpacing: '-0.03em',
           color: 'var(--n-ink)', margin: '0 auto 18px', maxWidth: 820,
         }}>
-          Rent a home you can{' '}
-          <em style={{ color: 'var(--n-accent)', fontStyle: 'italic' }}>actually trust</em>
+          Rent Kar Ghar —{' '}
+          <em style={{ color: 'var(--n-accent)', fontStyle: 'italic' }}>trusted rentals</em>
         </h1>
         <p style={{ fontSize: 16, color: 'var(--n-muted)', maxWidth: 480, margin: '0 auto 36px', lineHeight: 1.65 }}>
-          NADRA-verified landlords, owner-confirmed listings, and professional inspections — across six Punjab cities.
+          NADRA-verified landlords, owner-confirmed listings, and professional inspections — across Punjab&apos;s fastest-growing cities.
         </p>
 
         {/* Search bar — desktop */}
@@ -303,12 +303,13 @@ export default function Home() {
       <div style={{ padding: '28px 40px', color: 'var(--n-muted)', fontSize: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           <Logo size={16} />
-          <span>© 2026 Nivaas · An Abstrak Digital product</span>
+          <span>© 2026 Rent Kar Ghar · A verified rental platform for Pakistan</span>
         </div>
         <div style={{ display: 'flex', gap: 24 }}>
+          <Link href="/about" style={{ color: 'var(--n-muted)' }}>About</Link>
+          <Link href="/contact" style={{ color: 'var(--n-muted)' }}>Contact</Link>
           <Link href="/terms" style={{ color: 'var(--n-muted)' }}>Terms</Link>
           <Link href="/privacy" style={{ color: 'var(--n-muted)' }}>Privacy</Link>
-          <Link href="/how-it-works" style={{ color: 'var(--n-muted)' }}>Help</Link>
         </div>
       </div>
     </div>

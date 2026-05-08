@@ -3,8 +3,8 @@ import "./globals.css";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "Nivaas — Rentals you can actually trust",
-  description: "A verified rental marketplace for Punjab's growing cities",
+  title: "Rent Kar Ghar — Pakistan's verified rental marketplace",
+  description: "Find verified rental homes across Punjab — NADRA-verified landlords, real inspections, zero middlemen.",
 };
 
 export default function RootLayout({

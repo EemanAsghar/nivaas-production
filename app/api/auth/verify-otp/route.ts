@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     user: { id: updatedUser.id, phone: updatedUser.phone, name: updatedUser.name, role: updatedUser.role },
   });
 
-  res.cookies.set('nivaas_token', token, {
+  res.cookies.set('rkg_token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',

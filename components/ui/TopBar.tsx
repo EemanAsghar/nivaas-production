@@ -61,6 +61,8 @@ export default function TopBar({ role = 'tenant' }: TopBarProps) {
             {[
               { href: '/search', label: 'Rent' },
               { href: '/how-it-works', label: 'How it works' },
+              { href: '/about', label: 'About' },
+              { href: '/contact', label: 'Contact' },
             ].map(({ href, label }) => {
               const active = pathname === href || pathname.startsWith(href + '/');
               return (
@@ -219,6 +221,8 @@ export default function TopBar({ role = 'tenant' }: TopBarProps) {
             {/* Nav links */}
             <Link href="/search" onClick={closeDrawer} style={menuLinkStyle}><Icon name="pin" /> Rent a home</Link>
             <Link href="/how-it-works" onClick={closeDrawer} style={menuLinkStyle}><Icon name="sparkle" /> How it works</Link>
+            <Link href="/about" onClick={closeDrawer} style={menuLinkStyle}><Icon name="shield" /> About us</Link>
+            <Link href="/contact" onClick={closeDrawer} style={menuLinkStyle}><Icon name="chat" /> Contact</Link>
             {user && (
               <Link href="/messages" onClick={closeDrawer} style={{ ...menuLinkStyle, justifyContent: 'space-between' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><Icon name="chat" /> Messages</span>

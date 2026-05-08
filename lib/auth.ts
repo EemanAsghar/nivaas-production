@@ -28,7 +28,7 @@ export async function verifyToken(token: string): Promise<SessionPayload | null>
 
 export async function getSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
-  const token = cookieStore.get('nivaas_token')?.value;
+  const token = cookieStore.get('rkg_token')?.value;
   if (!token) return null;
   return verifyToken(token);
 }

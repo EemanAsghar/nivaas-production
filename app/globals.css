@@ -1,60 +1,38 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: #f6f3ee;
+  background: #0F2340;
   font-family: 'Inter Tight', system-ui, sans-serif;
-  color: #15120e;
+  color: #F8F4EE;
 }
 * { box-sizing: border-box; padding: 0; margin: 0; }
 a { color: inherit; text-decoration: none; }
 
-/* Theme tokens */
+/* Theme tokens — Rent Kar Ghar dark navy */
 :root {
-  --n-bg: #f6f3ee;
-  --n-bg-2: #efeae1;
-  --n-surface: #ffffff;
-  --n-surface-2: #faf7f1;
-  --n-ink: #15120e;
-  --n-ink-2: #2e2821;
-  --n-muted: #6b6358;
-  --n-muted-2: #958b7e;
-  --n-line: #e3ddd2;
-  --n-line-2: #d4ccbd;
-  --n-accent: #2f6b4a;
-  --n-accent-ink: #123427;
-  --n-accent-soft: #dfe9e1;
-  --n-warn: #a86a2a;
-  --n-danger: #9a3a2a;
-  --n-chip-bg: #15120e;
-  --n-chip-ink: #f6f3ee;
-  --n-shadow: 0 1px 0 rgba(21,18,14,.04), 0 12px 40px -24px rgba(21,18,14,.18);
-  --n-shadow-lg: 0 1px 0 rgba(21,18,14,.04), 0 30px 80px -40px rgba(21,18,14,.28);
+  --n-bg: #0F2340;
+  --n-bg-2: #0a1b2e;
+  --n-surface: #152d4e;
+  --n-surface-2: #1c3860;
+  --n-ink: #F8F4EE;
+  --n-ink-2: #ddd6c8;
+  --n-muted: #8aabb8;
+  --n-muted-2: #5f8ea8;
+  --n-line: #1e3d66;
+  --n-line-2: #2a5282;
+  --n-accent: #12A68C;
+  --n-accent-ink: #F8F4EE;
+  --n-accent-soft: rgba(18,166,140,0.18);
+  --n-warn: #E8963A;
+  --n-danger: #e05555;
+  --n-chip-bg: #F8F4EE;
+  --n-chip-ink: #0F2340;
+  --n-shadow: 0 1px 0 rgba(0,0,0,.35), 0 12px 40px -24px rgba(0,0,0,.55);
+  --n-shadow-lg: 0 1px 0 rgba(0,0,0,.35), 0 30px 80px -40px rgba(0,0,0,.65);
   --n-radius: 14px;
   --n-radius-sm: 10px;
   --display: 'Instrument Serif', 'Times New Roman', serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
-}
-
-.theme-graphite {
-  --n-bg: #15171a;
-  --n-bg-2: #1c1f23;
-  --n-surface: #1f2328;
-  --n-surface-2: #262b31;
-  --n-ink: #f2efe8;
-  --n-ink-2: #d9d5cb;
-  --n-muted: #9ea5ae;
-  --n-muted-2: #6e7580;
-  --n-line: #2e343b;
-  --n-line-2: #3a4149;
-  --n-accent: #cafc6b;
-  --n-accent-ink: #0f1a00;
-  --n-accent-soft: #2a3814;
-  --n-warn: #e0a870;
-  --n-danger: #e37b66;
-  --n-chip-bg: #f2efe8;
-  --n-chip-ink: #15171a;
-  --n-shadow: 0 1px 0 rgba(0,0,0,.3), 0 30px 80px -40px rgba(0,0,0,.6);
-  --n-shadow-lg: 0 1px 0 rgba(0,0,0,.3), 0 40px 100px -40px rgba(0,0,0,.7);
 }
 
 /* Base */
@@ -110,7 +88,7 @@ a { color: inherit; text-decoration: none; }
 }
 .n-btn.primary { background: var(--n-chip-bg); color: var(--n-chip-ink); border-color: var(--n-chip-bg); }
 .n-btn.ghost { background: transparent; border-color: var(--n-line); }
-.n-btn.accent { background: var(--n-accent); color: #fff; border-color: var(--n-accent); font-weight: 600; }
+.n-btn.accent { background: var(--n-accent); color: var(--n-accent-ink); border-color: var(--n-accent); font-weight: 600; }
 .n-btn.sm { height: 32px; font-size: 13px; padding: 0 12px; border-radius: 8px; }
 .n-btn:hover:not(:disabled) { opacity: 0.88; }
 .n-btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -132,13 +110,8 @@ a { color: inherit; text-decoration: none; }
 }
 .n-chip.verified {
   background: var(--n-accent-soft);
-  color: var(--n-accent-ink);
-  border-color: color-mix(in oklab, var(--n-accent) 40%, var(--n-line));
-}
-.theme-graphite .n-chip.verified {
   color: var(--n-accent);
-  background: color-mix(in oklab, var(--n-accent) 15%, transparent);
-  border-color: color-mix(in oklab, var(--n-accent) 40%, transparent);
+  border-color: rgba(18,166,140,0.35);
 }
 .n-chip.dark { background: var(--n-chip-bg); color: var(--n-chip-ink); border-color: var(--n-chip-bg); }
 
@@ -217,7 +190,7 @@ a.n-card:hover, .n-card.hoverable:hover {
   }
   .n-drawer-overlay {
     position: absolute; inset: 0;
-    background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
   }
   .n-drawer-panel {
     position: relative; z-index: 1;
@@ -232,7 +205,7 @@ a.n-card:hover, .n-card.hoverable:hover {
 
   /* Home hero: collapse two-col layout to single */
   .n-grid-2 { grid-template-columns: 1fr !important; padding-left: 20px !important; padding-right: 20px !important; }
-  .n-grid-2 > div:last-child { display: none; } /* hide trust score card on mobile */
+  .n-grid-2 > div:last-child { display: none; }
 
   /* Featured / search results grids */
   .n-grid-3 { grid-template-columns: 1fr !important; }

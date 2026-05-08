@@ -220,7 +220,7 @@ export default function ListPropertyPage() {
         {/* Step rail */}
         <div style={{ padding: '32px 28px', borderRight: '1px solid var(--n-line)', background: 'var(--n-bg-2)' }}>
           <div className="n-mono" style={{ color: 'var(--n-muted)' }}>New listing</div>
-          <h2 className="n-display" style={{ fontSize: 30, margin: '8px 0 28px', letterSpacing: '-0.02em' }}>Put it on Nivaas.</h2>
+          <h2 className="n-display" style={{ fontSize: 30, margin: '8px 0 28px', letterSpacing: '-0.02em' }}>List on Rent Kar Ghar.</h2>
 
           {STEPS.map((s, i) => (
             <div

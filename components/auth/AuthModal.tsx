@@ -92,7 +92,7 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
         {step === 'phone' && (
           <>
             <div className="n-mono" style={{ color: 'var(--n-muted)', marginBottom: 6 }}>Welcome to</div>
-            <h2 className="n-display" style={{ fontSize: 36, margin: '0 0 24px', letterSpacing: '-0.02em' }}>Nivaas</h2>
+            <h2 className="n-display" style={{ fontSize: 36, margin: '0 0 24px', letterSpacing: '-0.02em' }}>Rent Kar Ghar</h2>
             <p style={{ fontSize: 14, color: 'var(--n-muted)', marginBottom: 20 }}>Enter your Pakistani mobile number to get started.</p>
             <div style={{ marginBottom: 12 }}>
               <div className="n-mono" style={{ color: 'var(--n-muted)', marginBottom: 6 }}>Mobile number</div>

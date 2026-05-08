@@ -50,7 +50,7 @@ export default function Error({
       </div>
 
       <div className="n-mono" style={{ marginTop: 64, color: 'var(--n-muted)', opacity: 0.4, fontSize: 10 }}>
-        Nivaas · Rentals you can actually trust
+        Rent Kar Ghar · Trusted rentals in Pakistan
       </div>
     </div>
   );

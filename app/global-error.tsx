@@ -51,7 +51,7 @@ export default function GlobalError({
         </div>
 
         <div style={{ marginTop: 64, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6e7580', opacity: 0.6 }}>
-          Nivaas · Rentals you can actually trust
+          Rent Kar Ghar · Trusted rentals in Pakistan
         </div>
       </body>
     </html>
