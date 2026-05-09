@@ -64,9 +64,6 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (session.role !== 'LANDLORD' && session.role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Only landlords can create listings' }, { status: 403 });
-  }
 
   const body = await req.json();
   const parsed = createSchema.safeParse(body);
@@ -75,7 +72,7 @@ export async function POST(req: NextRequest) {
   }
 
   const listing = await prisma.listing.create({
-    data: { ...parsed.data, landlordId: session.userId, status: 'DRAFT' },
+    data: { ...parsed.data, landlordId: session.userId, status: 'ACTIVE' },
   });
 
   // Notify users whose saved searches match this listing

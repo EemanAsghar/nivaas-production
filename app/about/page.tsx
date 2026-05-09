@@ -7,11 +7,6 @@ export const metadata = {
   description: 'The story behind Rent Kar Ghar — why we built Pakistan\'s first verified rental marketplace.',
 };
 
-const TEAM = [
-  { name: 'Eeman Asghar', role: 'Founder & CEO', initials: 'EA' },
-  { name: 'Product Team', role: 'Design & Engineering', initials: 'PT' },
-];
-
 const STATS = [
   { value: '6+', label: 'Cities covered' },
   { value: '100%', label: 'NADRA-verified landlords' },
@@ -107,25 +102,6 @@ export default function AboutPage() {
             We started in Punjab&apos;s mid-sized cities — Sialkot, Gujranwala, Sargodha, Narowal, Nankana Sahib, Hafizabad —
             the places big platforms ignore. Every feature we&apos;ve built serves one goal: a tenant and landlord who can trust each other.
           </p>
-        </div>
-      </div>
-
-      {/* Team */}
-      <div style={{ maxWidth: 860, margin: '0 auto', padding: '64px 40px' }}>
-        <div className="n-mono" style={{ color: 'var(--n-muted)', marginBottom: 8 }}>The team</div>
-        <h2 className="n-display" style={{ fontSize: 40, margin: '0 0 36px', letterSpacing: '-0.02em' }}>Who&apos;s building this</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, maxWidth: 480 }}>
-          {TEAM.map(t => (
-            <div key={t.name} className="n-card" style={{ padding: '20px 22px', display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 999, background: 'var(--n-accent-soft)', border: '1.5px solid var(--n-accent)', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 14, color: 'var(--n-accent)', flexShrink: 0 }}>
-                {t.initials}
-              </div>
-              <div>
-                <div style={{ fontWeight: 600, fontSize: 14 }}>{t.name}</div>
-                <div style={{ fontSize: 12, color: 'var(--n-muted)', marginTop: 2 }}>{t.role}</div>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 

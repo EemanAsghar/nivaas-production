@@ -4,49 +4,53 @@ interface LogoProps {
   size?: number;
 }
 
-export default function Logo({ size = 22 }: LogoProps) {
-  const h = size;
-  const w = Math.round(h * 0.98);
-
+export default function Logo({ size = 42 }: LogoProps) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-      {/* R-house mark — matches actual brand logo */}
-      <svg width={w} height={h} viewBox="0 0 86 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Left stem → roof peak → right wall */}
-        <polyline
-          points="12,82 12,36 43,6 74,28 74,56"
-          stroke="#4A94CB"
-          strokeWidth="13"
-          fill="none"
-          strokeLinecap="square"
-          strokeLinejoin="miter"
-        />
-        {/* R bowl arc */}
-        <path
-          d="M 74 56 Q 74 72 56 72 L 12 72"
-          stroke="#4A94CB"
-          strokeWidth="13"
-          fill="none"
-          strokeLinecap="square"
-        />
-        {/* R diagonal leg */}
-        <line x1="56" y1="72" x2="76" y2="84" stroke="#4A94CB" strokeWidth="13" strokeLinecap="square"/>
-        {/* Window — 2×2 panes */}
-        <rect x="46" y="28" width="9" height="9" fill="#4A94CB"/>
-        <rect x="57" y="28" width="9" height="9" fill="#4A94CB"/>
-        <rect x="46" y="39" width="9" height="9" fill="#4A94CB"/>
-        <rect x="57" y="39" width="9" height="9" fill="#4A94CB"/>
-      </svg>
-      <span style={{
-        fontFamily: "'Inter Tight', system-ui, sans-serif",
-        fontWeight: 700,
-        fontSize: size * 0.72,
-        letterSpacing: '-0.03em',
-        color: 'var(--n-ink)',
-        lineHeight: 1,
-      }}>
-        Rent Kar Ghar
-      </span>
-    </div>
+    <svg
+      viewBox="0 0 100 112"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ height: size, width: 'auto', display: 'block', flexShrink: 0 }}
+      aria-label="Rent Kar Ghar"
+      role="img"
+    >
+      {/*
+        R-house mark: one compound path (evenodd) carves the hollow interior
+        out of the outer silhouette, then the 4 window squares sit inside.
+      */}
+      <path
+        fillRule="evenodd"
+        fill="var(--n-accent)"
+        d={[
+          // ── Outer silhouette (clockwise) ──────────────────────────────
+          'M 8,104',
+          'L 8,32',
+          'L 48,5',       // roof peak
+          'L 88,32',
+          'L 88,70',      // bottom of P-bump outer edge
+          'Q 88,82 76,82',// curve around bottom of bump
+          'L 60,82',      // body right, where leg roots
+          'L 80,104',     // leg bottom-right
+          'L 67,104',     // leg bottom-left
+          'L 46,82',      // leg top-left
+          'L 22,82',
+          'L 22,104',
+          'Z',
+
+          // ── Inner hollow (counter-clockwise → evenodd cuts it out) ────
+          'M 22,35',
+          'L 75,35',
+          'Q 83,35 83,51.5',
+          'Q 83,68 75,68',
+          'L 22,68',
+          'Z',
+        ].join(' ')}
+      />
+
+      {/* 2×2 window — filled teal squares inside the hollow */}
+      <rect fill="var(--n-accent)" x="28" y="41" width="13" height="11" rx="1" />
+      <rect fill="var(--n-accent)" x="44" y="41" width="13" height="11" rx="1" />
+      <rect fill="var(--n-accent)" x="28" y="55" width="13" height="11" rx="1" />
+      <rect fill="var(--n-accent)" x="44" y="55" width="13" height="11" rx="1" />
+    </svg>
   );
 }

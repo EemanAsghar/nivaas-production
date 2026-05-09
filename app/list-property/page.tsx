@@ -53,7 +53,6 @@ export default function ListPropertyPage() {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [publishing, setPublishing] = useState(false);
-  const [gateway, setGateway] = useState<'JAZZCASH' | 'EASYPAISA' | 'CARD'>('JAZZCASH');
   const [priceStats, setPriceStats] = useState<{ count: number; avg: number | null; min: number | null; max: number | null } | null>(null);
 
   useEffect(() => {
@@ -154,14 +153,6 @@ export default function ListPropertyPage() {
         await fetch(`/api/listings/${listingId}/photos`, { method: 'POST', body: fd });
       }
 
-      // 3. Pay listing fee — activates listing as side-effect
-      const payRes = await fetch('/api/payments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'LISTING_FEE', listingId, gateway }),
-      });
-      if (!payRes.ok) { setError('Payment failed. Please try again.'); return; }
-
       router.push(`/property/${listingId}`);
     } finally {
       setPublishing(false);
@@ -181,31 +172,6 @@ export default function ListPropertyPage() {
             <div className="n-display" style={{ fontSize: 40, marginBottom: 12 }}>Sign in first</div>
             <div style={{ color: 'var(--n-muted)', marginBottom: 24 }}>You need to be signed in to list a property.</div>
             <button onClick={() => router.push('/')} className="n-btn primary">Go home</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (user.role !== 'LANDLORD') {
-    return (
-      <div className="n-root">
-        <TopBar />
-        <div style={{ display: 'grid', placeItems: 'center', height: '70vh', textAlign: 'center' }}>
-          <div>
-            <div className="n-display" style={{ fontSize: 36, marginBottom: 12 }}>Switch to landlord</div>
-            <div style={{ color: 'var(--n-muted)', marginBottom: 24, maxWidth: 400 }}>
-              Your account is set up as a tenant. Update your profile to list a property.
-            </div>
-            <button
-              onClick={async () => {
-                await fetch('/api/auth/profile', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: 'LANDLORD' }) });
-                window.location.reload();
-              }}
-              className="n-btn accent"
-            >
-              Switch to landlord
-            </button>
           </div>
         </div>
       </div>
@@ -253,10 +219,10 @@ export default function ListPropertyPage() {
           <div className="n-card" style={{ marginTop: 28, padding: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Icon name="shield" />
-              <span className="n-mono" style={{ color: 'var(--n-muted)' }}>Fee preview</span>
+              <span className="n-mono" style={{ color: 'var(--n-muted)' }}>Free to list</span>
             </div>
-            <div className="n-display" style={{ fontSize: 28, marginTop: 8 }}>₨ 1,500</div>
-            <div style={{ fontSize: 12, color: 'var(--n-muted)', marginTop: 4 }}>Listing fee · Pay on publish</div>
+            <div className="n-display" style={{ fontSize: 28, marginTop: 8 }}>₨ 0</div>
+            <div style={{ fontSize: 12, color: 'var(--n-muted)', marginTop: 4 }}>No upfront fee · Payment on deal finalisation</div>
           </div>
         </div>
 
@@ -534,7 +500,12 @@ export default function ListPropertyPage() {
                 <div className="n-card" style={{ display: 'grid', gridTemplateColumns: previewUrls[0] ? '240px 1fr' : '1fr', padding: 14, gap: 18 }}>
                   {previewUrls[0] && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={previewUrls[0]} alt="" style={{ height: 180, borderRadius: 10, objectFit: 'cover', width: '100%' }} />
+                    <img
+                      src={previewUrls[0]}
+                      alt=""
+                      style={{ height: 180, borderRadius: 10, objectFit: 'cover', width: '100%', background: 'var(--n-surface-2)' }}
+                      onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
                   )}
                   <div>
                     <div style={{ fontSize: 20, fontWeight: 500, letterSpacing: '-0.01em' }}>{form.title || 'Untitled listing'}</div>
@@ -575,34 +546,10 @@ export default function ListPropertyPage() {
                 ))}
               </div>
 
-              {/* Fee */}
-              <div className="n-card" style={{ padding: 20, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ fontWeight: 500 }}>Listing fee</div>
-                  <div className="n-mono" style={{ color: 'var(--n-muted)', marginTop: 4 }}>One-time · Valid 90 days · Renew anytime</div>
-                </div>
-                <div className="n-display" style={{ fontSize: 32 }}>₨ 1,500</div>
-              </div>
-
-              {/* Gateway picker */}
-              <div style={{ marginBottom: 20 }}>
-                <div className="n-mono" style={{ color: 'var(--n-muted)', marginBottom: 8 }}>Pay via</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-                  {(['JAZZCASH', 'EASYPAISA', 'CARD'] as const).map(g => (
-                    <button
-                      key={g}
-                      onClick={() => setGateway(g)}
-                      style={{
-                        padding: '12px 0', borderRadius: 10, fontSize: 13, cursor: 'pointer',
-                        fontFamily: 'var(--mono)', fontWeight: gateway === g ? 600 : 400,
-                        border: `1.5px solid ${gateway === g ? 'var(--n-accent)' : 'var(--n-line)'}`,
-                        background: gateway === g ? 'var(--n-accent-soft)' : 'var(--n-surface-2)',
-                        color: gateway === g ? 'var(--n-accent-ink)' : 'var(--n-muted)',
-                      }}
-                    >
-                      {g === 'JAZZCASH' ? 'JazzCash' : g === 'EASYPAISA' ? 'Easypaisa' : 'Card'}
-                    </button>
-                  ))}
+              <div className="n-card" style={{ padding: 16, marginBottom: 16, background: 'var(--n-accent-soft)', borderColor: 'transparent', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Icon name="shield" style={{ color: 'var(--n-accent)', flexShrink: 0 }} />
+                <div style={{ fontSize: 13, color: 'var(--n-accent-ink)', lineHeight: 1.5 }}>
+                  <strong>Free to publish.</strong> No upfront listing fee. A small platform fee applies only when your deal is finalised with a tenant.
                 </div>
               </div>
 
@@ -612,7 +559,7 @@ export default function ListPropertyPage() {
                 className="n-btn accent"
                 style={{ width: '100%', height: 52, justifyContent: 'center', fontSize: 16 }}
               >
-                {publishing ? 'Processing payment…' : <><Icon name="zap" /> Pay ₨ 1,500 &amp; publish</>}
+                {publishing ? 'Publishing…' : <><Icon name="zap" /> Publish listing</>}
               </button>
             </div>
           )}

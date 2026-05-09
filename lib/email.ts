@@ -4,7 +4,7 @@ export async function sendOtpEmail(to: string, code: string) {
   const { Resend } = await import('resend');
   const resend = new Resend(apiKey);
   await resend.emails.send({
-    from: 'Rent Kar Ghar <onboarding@resend.dev>',
+    from: 'Rent Kar Ghar <info@rentkarghar.com>',
     to,
     subject: `Your Rent Kar Ghar OTP: ${code}`,
     html: `

@@ -19,8 +19,7 @@ export async function POST(req: NextRequest) {
 
   let photoUrl: string;
   if (useR2) {
-    const { uploadToR2: upload } = await import('@/lib/r2');
-    photoUrl = await upload(`avatars/${session.userId}.${ext}`, buffer, file.type || 'image/jpeg');
+    photoUrl = await uploadToR2(`avatars/${session.userId}.${ext}`, buffer, file.type || 'image/jpeg');
   } else {
     const dir = path.join(process.cwd(), 'public', 'uploads', 'avatars');
     await mkdir(dir, { recursive: true });

@@ -50,23 +50,33 @@ export default function TopBar({ role = 'tenant' }: TopBarProps) {
         className="n-topbar-inner"
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 40px', borderBottom: '1px solid var(--n-line)',
-          background: 'var(--n-bg)', position: 'sticky', top: 0, zIndex: 100,
+          padding: '14px 40px', borderBottom: '1px solid var(--n-line)',
+          background: 'rgba(15,35,64,0.85)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          position: 'sticky', top: 0, zIndex: 100,
         }}
       >
         {/* Left: logo + nav */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
           <Link href="/"><Logo /></Link>
-          <nav className="n-topbar-nav" style={{ display: 'flex', gap: 22, fontSize: 14, color: 'var(--n-muted)' }}>
+          <nav className="n-topbar-nav" style={{ display: 'flex', gap: 4, fontSize: 14 }}>
             {[
-              { href: '/search', label: 'Rent' },
+              { href: '/search',       label: 'Rent' },
               { href: '/how-it-works', label: 'How it works' },
-              { href: '/about', label: 'About' },
-              { href: '/contact', label: 'Contact' },
+              { href: '/about',        label: 'About' },
+              { href: '/contact',      label: 'Contact' },
             ].map(({ href, label }) => {
               const active = pathname === href || pathname.startsWith(href + '/');
               return (
-                <Link key={href} href={href} style={{ color: active ? 'var(--n-ink)' : 'var(--n-muted)', fontWeight: active ? 600 : 400, borderBottom: active ? '2px solid var(--n-ink)' : '2px solid transparent', paddingBottom: 2, transition: 'color 0.15s' }}>
+                <Link key={href} href={href} style={{
+                  color: active ? 'var(--n-ink)' : 'var(--n-muted)',
+                  fontWeight: active ? 600 : 400,
+                  padding: '6px 12px',
+                  borderRadius: 8,
+                  background: active ? 'var(--n-surface)' : 'transparent',
+                  transition: 'color 0.12s, background 0.12s',
+                }}>
                   {label}
                 </Link>
               );

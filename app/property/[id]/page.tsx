@@ -110,7 +110,6 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
   const [inspType, setInspType] = useState<'GENERAL' | 'MOVE_IN' | 'MOVE_OUT'>('GENERAL');
   const [inspGateway, setInspGateway] = useState<'JAZZCASH' | 'EASYPAISA' | 'CARD'>('JAZZCASH');
   const [inspSending, setInspSending] = useState(false);
-  const [inspDone, setInspDone] = useState(false);
 
   // Reviews
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -120,6 +119,9 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewError, setReviewError] = useState('');
   const [reviewDone, setReviewDone] = useState(false);
+
+  // Payment processing state
+  const [inspStep, setInspStep] = useState<'form' | 'processing' | 'done'>('form');
 
   useEffect(() => {
     fetch(`/api/listings/${id}`)
@@ -207,14 +209,17 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
 
   async function requestInspection() {
     setInspSending(true);
+    setInspStep('processing');
+    // Simulate gateway handoff delay (1.4s) then fire real API call
+    await new Promise(r => setTimeout(r, 1400));
     await fetch('/api/inspection-requests', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ listingId: id, type: inspType, gateway: inspGateway }),
     });
     setInspSending(false);
-    setInspDone(true);
-    setTimeout(() => { setInspModal(false); setInspDone(false); }, 2000);
+    setInspStep('done');
+    setTimeout(() => { setInspModal(false); setInspStep('form'); }, 2400);
   }
 
   if (loading) {
@@ -552,16 +557,6 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
               <button onClick={() => user ? setInspModal(true) : setMsgModal(true)} className="n-btn ghost" style={{ height: 44, justifyContent: 'center' }}>
                 <Icon name="stamp" /> Request inspection · ₨ 1,800
               </button>
-              <a
-                href={`https://wa.me/?text=${encodeURIComponent(`Check out this rental on Rent Kar Ghar: ${p.title} in ${p.locality}, ${p.city} — ₨${p.rentAmount.toLocaleString()}/month\n\nhttps://rentkarghar.com/property/${p.id}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="n-btn ghost"
-                style={{ height: 40, justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                Share on WhatsApp
-              </a>
             </div>
 
             <div className="n-mono" style={{ color: 'var(--n-muted-2)', textAlign: 'center', marginTop: 14, lineHeight: 1.5 }}>
@@ -674,11 +669,18 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
             <h2 className="n-display" style={{ fontSize: 28, margin: '0 0 4px' }}>Request inspection</h2>
             <div style={{ fontSize: 13, color: 'var(--n-muted)', marginBottom: 24 }}>{p.title}</div>
 
-            {inspDone ? (
+            {inspStep === 'processing' ? (
+              <div style={{ textAlign: 'center', padding: '32px 0' }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', border: '3px solid var(--n-line)', borderTopColor: inspGateway === 'JAZZCASH' ? '#d32f2f' : inspGateway === 'EASYPAISA' ? '#388e3c' : 'var(--n-accent)', margin: '0 auto 16px', animation: 'spin 0.8s linear infinite' }} />
+                <div style={{ fontWeight: 600 }}>Connecting to {inspGateway === 'JAZZCASH' ? 'JazzCash' : inspGateway === 'EASYPAISA' ? 'Easypaisa' : 'payment gateway'}…</div>
+                <div style={{ color: 'var(--n-muted)', fontSize: 13, marginTop: 6 }}>Please wait, do not close this window.</div>
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+              </div>
+            ) : inspStep === 'done' ? (
               <div style={{ textAlign: 'center', padding: '24px 0' }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
-                <div style={{ fontWeight: 600 }}>Inspection requested!</div>
-                <div style={{ color: 'var(--n-muted)', fontSize: 13, marginTop: 6 }}>An inspector will be assigned within 24 hours.</div>
+                <div style={{ fontWeight: 600 }}>Payment confirmed!</div>
+                <div style={{ color: 'var(--n-muted)', fontSize: 13, marginTop: 6 }}>Inspector assigned. Report ready within 24 hours.</div>
               </div>
             ) : (
               <>
@@ -698,11 +700,19 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
 
                 <div className="n-mono" style={{ color: 'var(--n-muted)', marginBottom: 8 }}>Pay via</div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 20 }}>
-                  {(['JAZZCASH', 'EASYPAISA', 'CARD'] as const).map(g => (
-                    <button key={g} onClick={() => setInspGateway(g)} style={{ padding: '10px 0', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--mono)', border: `1.5px solid ${inspGateway === g ? 'var(--n-accent)' : 'var(--n-line)'}`, background: inspGateway === g ? 'var(--n-accent-soft)' : 'var(--n-surface-2)', color: inspGateway === g ? 'var(--n-accent-ink)' : 'var(--n-muted)', fontWeight: inspGateway === g ? 600 : 400 }}>
-                      {g === 'JAZZCASH' ? 'JazzCash' : g === 'EASYPAISA' ? 'Easypaisa' : 'Card'}
-                    </button>
-                  ))}
+                  {([
+                    { id: 'JAZZCASH' as const,  label: 'JazzCash',  color: '#d32f2f', dot: '#d32f2f' },
+                    { id: 'EASYPAISA' as const, label: 'Easypaisa', color: '#388e3c', dot: '#388e3c' },
+                    { id: 'CARD' as const,      label: 'Debit/Credit card',  color: 'var(--n-ink)', dot: 'var(--n-ink)' },
+                  ]).map(g => {
+                    const sel = inspGateway === g.id;
+                    return (
+                      <button key={g.id} onClick={() => setInspGateway(g.id)} style={{ padding: '12px 8px', borderRadius: 10, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', border: `1.5px solid ${sel ? g.color : 'var(--n-line)'}`, background: sel ? 'color-mix(in oklab,' + g.color + ' 10%, var(--n-bg))' : 'var(--n-surface-2)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, transition: 'all .15s' }}>
+                        <span style={{ width: 10, height: 10, borderRadius: '50%', background: g.dot, display: 'block', opacity: sel ? 1 : 0.4 }} />
+                        <span style={{ color: sel ? g.color : 'var(--n-muted)', fontWeight: sel ? 700 : 400, textAlign: 'center', lineHeight: 1.3 }}>{g.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
 
 

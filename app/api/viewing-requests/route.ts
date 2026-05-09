@@ -45,18 +45,40 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid date' }, { status: 400 });
   }
 
-  // Verify user is a participant in the conversation (if conversationId provided)
-  if (conversationId) {
+  // Resolve or create the conversation for this viewing
+  let resolvedConversationId = conversationId ?? null;
+
+  if (resolvedConversationId) {
     const participant = await prisma.conversationParticipant.findUnique({
-      where: { conversationId_userId: { conversationId, userId: session.userId } },
+      where: { conversationId_userId: { conversationId: resolvedConversationId, userId: session.userId } },
     });
     if (!participant) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  } else {
+    // Auto-create or reuse a conversation between tenant and landlord for this listing
+    const listing = await prisma.listing.findUnique({ where: { id: listingId }, select: { landlordId: true } });
+    if (!listing) return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
+
+    const existing = await prisma.conversation.findFirst({
+      where: { listingId, participants: { some: { userId: session.userId } } },
+    });
+
+    if (existing) {
+      resolvedConversationId = existing.id;
+    } else {
+      const conv = await prisma.conversation.create({
+        data: {
+          listingId,
+          participants: { create: [{ userId: session.userId }, { userId: listing.landlordId }] },
+        },
+      });
+      resolvedConversationId = conv.id;
+    }
   }
 
   const viewing = await prisma.viewingRequest.create({
     data: {
       listingId,
-      conversationId: conversationId ?? '',
+      conversationId: resolvedConversationId,
       requesterId: session.userId,
       proposedAt: proposedDate,
       note: note ?? null,
@@ -65,20 +87,18 @@ export async function POST(req: NextRequest) {
   });
 
   // Send a system message in the conversation
-  if (conversationId) {
-    const dateStr = proposedDate.toLocaleString('en-PK', {
-      weekday: 'short', day: 'numeric', month: 'short',
-      hour: '2-digit', minute: '2-digit',
-    });
-    await prisma.message.create({
-      data: {
-        conversationId,
-        senderId: session.userId,
-        body: `📅 Viewing requested for ${dateStr}${note ? ` — ${note}` : ''}`,
-      },
-    });
-    await prisma.conversation.update({ where: { id: conversationId }, data: { updatedAt: new Date() } });
-  }
+  const dateStr = proposedDate.toLocaleString('en-PK', {
+    weekday: 'short', day: 'numeric', month: 'short',
+    hour: '2-digit', minute: '2-digit',
+  });
+  await prisma.message.create({
+    data: {
+      conversationId: resolvedConversationId,
+      senderId: session.userId,
+      body: `📅 Viewing requested for ${dateStr}${note ? ` — ${note}` : ''}`,
+    },
+  });
+  await prisma.conversation.update({ where: { id: resolvedConversationId }, data: { updatedAt: new Date() } });
 
   // Notify the landlord
   const listingRecord = await prisma.listing.findUnique({ where: { id: listingId }, select: { landlordId: true, title: true } });

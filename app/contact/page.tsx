@@ -9,23 +9,23 @@ const CHANNELS = [
   {
     icon: 'chat' as const,
     label: 'Email us',
-    value: 'hello@rentkarghar.com',
+    value: 'info@rentkarghar.com',
     desc: 'For general enquiries, partnerships, and press.',
-    href: 'mailto:hello@rentkarghar.com',
+    href: 'mailto:info@rentkarghar.com',
   },
   {
     icon: 'shield' as const,
     label: 'Privacy & legal',
-    value: 'privacy@rentkarghar.com',
+    value: 'info@rentkarghar.com',
     desc: 'GDPR / data requests, CNIC deletion, legal notices.',
-    href: 'mailto:privacy@rentkarghar.com',
+    href: 'mailto:info@rentkarghar.com',
   },
   {
     icon: 'stamp' as const,
     label: 'Inspection support',
-    value: 'inspections@rentkarghar.com',
+    value: 'info@rentkarghar.com',
     desc: 'Questions about scheduled inspections or reports.',
-    href: 'mailto:inspections@rentkarghar.com',
+    href: 'mailto:info@rentkarghar.com',
   },
 ];
 
@@ -33,13 +33,15 @@ export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus('sending');
-    // In production this would POST to /api/contact
-    // For now simulate a short delay then mark sent
-    await new Promise(r => setTimeout(r, 800));
-    setStatus('sent');
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    });
+    setStatus(res.ok ? 'sent' : 'error');
   }
 
   return (
@@ -160,6 +162,11 @@ export default function ContactPage() {
                 />
               </div>
 
+              {status === 'error' && (
+                <div style={{ padding: '10px 14px', borderRadius: 10, background: 'color-mix(in oklab, var(--n-danger) 12%, transparent)', color: 'var(--n-danger)', fontSize: 13 }}>
+                  Failed to send. Please email us directly at info@rentkarghar.com
+                </div>
+              )}
               <button
                 type="submit"
                 disabled={status === 'sending'}
