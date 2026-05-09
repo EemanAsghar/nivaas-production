@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 const schema = z.object({
   phone: z.string().regex(/^(\+92|0)?3\d{9}$/, 'Invalid Pakistani mobile number'),
-  email: z.string().email('Invalid email address').optional(),
+  email: z.string().email('Invalid email address'),
 });
 
 // In-memory IP rate limiter (resets on server restart — good enough for serverless)
@@ -44,8 +44,8 @@ export async function POST(req: NextRequest) {
 
   const user = await prisma.user.upsert({
     where: { phone },
-    create: { phone, email: parsed.data.email ?? null, role: 'TENANT' },
-    update: parsed.data.email ? { email: parsed.data.email } : {},
+    create: { phone, email: parsed.data.email, role: 'TENANT' },
+    update: { email: parsed.data.email },
     select: { id: true, email: true },
   });
 
@@ -67,13 +67,12 @@ export async function POST(req: NextRequest) {
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
   await prisma.oTP.create({ data: { userId: user.id, code, expiresAt } });
 
-  const email = parsed.data.email ?? user.email;
-  if (email && process.env.RESEND_API_KEY) {
-    await sendOtpEmail(email, code).catch(err => console.error('[Resend]', err));
-    return NextResponse.json({ success: true, message: `OTP sent to ${email}` });
+  if (process.env.RESEND_API_KEY) {
+    await sendOtpEmail(parsed.data.email, code).catch(err => console.error('[Resend]', err));
+    return NextResponse.json({ success: true, message: `OTP sent to ${parsed.data.email}` });
   }
 
-  // Dev fallback — return OTP in response
+  // Dev fallback — return OTP in response (no Resend key set)
   console.log(`[DEV] OTP for ${phone}: ${code}`);
   return NextResponse.json({ success: true, message: 'OTP sent', _dev_otp: code });
 }

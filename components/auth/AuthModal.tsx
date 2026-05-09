@@ -29,7 +29,7 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
       const res = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, ...(email && { email }) }),
+        body: JSON.stringify({ phone, email }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
@@ -105,18 +105,19 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
               />
             </div>
             <div style={{ marginBottom: 16 }}>
-              <div className="n-mono" style={{ color: 'var(--n-muted)', marginBottom: 6 }}>Email (OTP will be sent here)</div>
+              <div className="n-mono" style={{ color: 'var(--n-muted)', marginBottom: 6 }}>Email <span style={{ color: 'var(--n-danger)' }}>*</span> (OTP will be sent here)</div>
               <input
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && sendOtp()}
                 placeholder="you@example.com"
                 type="email"
+                required
                 style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid var(--n-line)', background: 'var(--n-surface-2)', color: 'var(--n-ink)', fontFamily: 'inherit', fontSize: 15, outline: 'none' }}
               />
             </div>
             {error && <div style={{ color: 'var(--n-danger)', fontSize: 13, marginBottom: 12 }}>{error}</div>}
-            <button onClick={sendOtp} disabled={!phone || loading} className="n-btn accent" style={{ width: '100%', justifyContent: 'center', height: 44, fontSize: 15 }}>
+            <button onClick={sendOtp} disabled={!phone || !email || loading} className="n-btn accent" style={{ width: '100%', justifyContent: 'center', height: 44, fontSize: 15 }}>
               {loading ? 'Sending…' : 'Send OTP'}
             </button>
           </>
