@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { notify } from '@/lib/notify';
+import { generateLeasePdf } from '@/lib/generate-lease-pdf';
+import { uploadToR2 } from '@/lib/r2';
 
 // GET — single lease
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -71,9 +73,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   // Determine new status
   const landlordSigned = isLandlord ? true : !!lease.landlordSignedAt;
   const tenantSigned   = isTenant   ? true : !!lease.tenantSignedAt;
-  if (landlordSigned && tenantSigned) {
-    data.status = 'SIGNED';
-  }
+  if (landlordSigned && tenantSigned) data.status = 'SIGNED';
 
   const updated = await prisma.lease.update({
     where: { id },
@@ -85,12 +85,49 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     },
   });
 
+  // Generate PDF when both parties have signed
+  if (landlordSigned && tenantSigned && !lease.pdfUrl) {
+    try {
+      const landlordSignedAt = isLandlord ? now : lease.landlordSignedAt!;
+      const tenantSignedAt   = isTenant   ? now : lease.tenantSignedAt!;
+
+      const pdfBuffer = await generateLeasePdf({
+        leaseId:          id,
+        listingTitle:     updated.listing.title,
+        listingLocality:  updated.listing.locality,
+        listingCity:      updated.listing.city,
+        listingAddress:   updated.listing.address,
+        landlordName:     updated.landlord.name ?? updated.landlord.phone,
+        landlordPhone:    updated.landlord.phone,
+        tenantName:       updated.tenant.name ?? updated.tenant.phone,
+        tenantPhone:      updated.tenant.phone,
+        monthlyRent:      updated.monthlyRent,
+        securityDeposit:  updated.securityDeposit,
+        startDate:        updated.startDate!,
+        endDate:          updated.endDate!,
+        landlordSignedAt,
+        tenantSignedAt,
+      });
+
+      const pdfUrl = await uploadToR2(
+        `leases/${id}/agreement.pdf`,
+        pdfBuffer,
+        'application/pdf'
+      );
+
+      await prisma.lease.update({ where: { id }, data: { pdfUrl } });
+      (updated as typeof updated & { pdfUrl?: string }).pdfUrl = pdfUrl;
+    } catch (err) {
+      console.error('[Lease PDF]', err);
+    }
+  }
+
   // Notify the other party
   const otherUserId = isLandlord ? updated.tenantId : updated.landlordId;
   const signerName  = isLandlord ? (updated.landlord.name ?? updated.landlord.phone) : (updated.tenant.name ?? updated.tenant.phone);
   if (landlordSigned && tenantSigned) {
-    await notify(updated.tenantId,   'Lease fully signed', `Both parties have signed the lease for ${updated.listing.title}.`, `/leases/${id}`);
-    await notify(updated.landlordId, 'Lease fully signed', `Both parties have signed the lease for ${updated.listing.title}.`, `/leases/${id}`);
+    await notify(updated.tenantId,   'Lease fully signed', `Both parties have signed the lease for ${updated.listing.title}. Your agreement PDF is ready to download.`, `/leases/${id}`);
+    await notify(updated.landlordId, 'Lease fully signed', `Both parties have signed the lease for ${updated.listing.title}. Your agreement PDF is ready to download.`, `/leases/${id}`);
   } else {
     await notify(otherUserId, 'Lease signed', `${signerName} has signed the lease for ${updated.listing.title}. Your signature is needed.`, `/leases/${id}`);
   }

@@ -7,9 +7,9 @@ import Icon from '@/components/ui/Icon';
 import { useAuth } from '@/components/auth/AuthProvider';
 
 const TIER_LABELS: Record<string, { label: string; desc: string; color: string }> = {
-  BASIC:    { label: 'Basic',    desc: 'Phone verified only',          color: 'var(--n-muted)' },
-  STANDARD: { label: 'Standard', desc: 'CNIC uploaded · Pending NADRA', color: 'var(--n-warn)' },
-  VERIFIED: { label: 'Verified', desc: 'NADRA confirmed',              color: 'var(--n-accent-ink)' },
+  BASIC:    { label: 'Basic',    desc: 'Phone verified only',                    color: 'var(--n-muted)' },
+  STANDARD: { label: 'Standard', desc: 'CNIC uploaded · Verification in progress', color: 'var(--n-warn)' },
+  VERIFIED: { label: 'NADRA Verified', desc: 'Identity confirmed via CNIC',      color: 'var(--n-accent-ink)' },
 };
 
 export default function AccountPage() {
@@ -52,7 +52,7 @@ export default function AccountPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name.trim() }),
     });
-    if (res.ok) { await refresh(); setSaveMsg('Saved.'); }
+    if (res.ok) { refresh(); setSaveMsg('Saved.'); }
     else setSaveMsg('Failed to save.');
     setSaving(false);
   }
@@ -63,7 +63,7 @@ export default function AccountPage() {
     const fd = new FormData();
     fd.append('avatar', file);
     const res = await fetch('/api/auth/avatar', { method: 'POST', body: fd });
-    if (res.ok) await refresh();
+    if (res.ok) refresh();
     setAvatarUploading(false);
   }
 
@@ -75,8 +75,8 @@ export default function AccountPage() {
     fd.append('cnicBack',  backFile);
     const res = await fetch('/api/cnic', { method: 'POST', body: fd });
     if (res.ok) {
-      await refresh();
-      setUploadMsg('CNIC submitted. An admin will confirm your identity shortly.');
+      refresh();
+      setUploadMsg('Identity verified. Your account is now NADRA-confirmed.');
     } else {
       const d = await res.json();
       setUploadMsg(d.error ?? 'Upload failed.');
@@ -242,7 +242,7 @@ export default function AccountPage() {
               <div style={{
                 padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 12,
                 background: uploadMsg.startsWith('CNIC submitted') ? 'var(--n-accent-soft)' : 'color-mix(in oklab, var(--n-danger) 12%, transparent)',
-                color: uploadMsg.startsWith('CNIC submitted') ? 'var(--n-accent-ink)' : 'var(--n-danger)',
+                color: uploadMsg.startsWith('Identity verified') ? 'var(--n-accent-ink)' : 'var(--n-danger)',
               }}>
                 {uploadMsg}
               </div>

@@ -16,6 +16,7 @@ type Lease = {
   securityDeposit: number;
   tenantSignedAt: string | null;
   landlordSignedAt: string | null;
+  pdfUrl: string | null;
   createdAt: string;
   listing: { id: string; title: string; city: string; locality: string; address: string | null };
   tenant:  { id: string; name: string | null; phone: string };
@@ -320,13 +321,25 @@ export default function LeasePage({ params }: { params: Promise<{ id: string }> 
           <Link href={`/property/${lease.listing.id}`} className="n-btn ghost sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <Icon name="home" /> Property
           </Link>
-          <button
-            onClick={() => window.print()}
-            className="n-btn ghost sm"
-            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
-          >
-            <Icon name="file" /> Print / Save PDF
-          </button>
+          {lease.pdfUrl ? (
+            <a
+              href={lease.pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="n-btn accent sm"
+              style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              <Icon name="file" /> Download Agreement PDF
+            </a>
+          ) : (
+            <button
+              onClick={() => window.print()}
+              className="n-btn ghost sm"
+              style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              <Icon name="file" /> Print / Save PDF
+            </button>
+          )}
         </div>
       </div>
     </div>
