@@ -33,10 +33,12 @@ type InspectionReq = {
   type: string;
   status: string;
   scheduledAt: string | null;
+  completedAt: string | null;
   feeAmount: number;
   createdAt: string;
   listing: { id: string; title: string; city: string; locality: string };
   inspector: { id: string; name: string | null; phone: string } | null;
+  checklistItems: { id: string; category: string; status: string; notes: string | null }[];
 };
 
 const VIEWING_STATUS: Record<string, { label: string; bg: string; color: string }> = {
@@ -73,6 +75,7 @@ export default function ActivityPage() {
   const [leases, setLeases] = useState<LeaseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState<string | null>(null);
+  const [expandedReport, setExpandedReport] = useState<string | null>(null);
 
   const loadData = useCallback(() => {
     if (!user) return;
@@ -218,33 +221,76 @@ export default function ActivityPage() {
             <div style={{ display: 'grid', gap: 12 }}>
               {inspections.map(ins => {
                 const sc = INSP_STATUS[ins.status] ?? INSP_STATUS.REQUESTED;
+                const isExpanded = expandedReport === ins.id;
                 return (
-                  <div key={ins.id} className="n-card" style={{ padding: 20, display: 'flex', gap: 16, alignItems: 'center' }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--n-surface-2)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-                      <Icon name="stamp" className="n-ico lg" style={{ color: 'var(--n-muted)' }} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{ins.listing.title}</div>
-                      <div style={{ fontSize: 13, color: 'var(--n-muted)' }}>
-                        {ins.listing.locality}, {ins.listing.city} · {ins.type.replace('_', '-')} inspection
+                  <div key={ins.id} className="n-card" style={{ padding: 0, overflow: 'hidden' }}>
+                    <div style={{ padding: 20, display: 'flex', gap: 16, alignItems: 'center' }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--n-surface-2)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                        <Icon name="stamp" className="n-ico lg" style={{ color: 'var(--n-muted)' }} />
                       </div>
-                      {ins.inspector && (
-                        <div style={{ fontSize: 13, color: 'var(--n-accent-ink)', marginTop: 4 }}>
-                          Inspector: {ins.inspector.name ?? ins.inspector.phone}
-                          {ins.scheduledAt && ` · ${new Date(ins.scheduledAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'short' })}`}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{ins.listing.title}</div>
+                        <div style={{ fontSize: 13, color: 'var(--n-muted)' }}>
+                          {ins.listing.locality}, {ins.listing.city} · {ins.type.replace('_', '-')} inspection
                         </div>
-                      )}
-                      {!ins.inspector && ins.status === 'REQUESTED' && (
-                        <div style={{ fontSize: 12, color: 'var(--n-muted)', marginTop: 4 }}>An inspector will be assigned within 24 hours.</div>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
-                      <span className="n-chip" style={{ background: sc.bg, color: sc.color, borderColor: 'transparent' }}>{sc.label}</span>
-                      <div style={{ display: 'flex', gap: 6 }}>
-                        <span className="n-display" style={{ fontSize: 16 }}>₨ {ins.feeAmount.toLocaleString()}</span>
-                        <Link href={`/property/${ins.listing.id}`} className="n-btn ghost sm">Property</Link>
+                        {ins.inspector && (
+                          <div style={{ fontSize: 13, color: 'var(--n-accent-ink)', marginTop: 4 }}>
+                            Inspector: {ins.inspector.name ?? ins.inspector.phone}
+                            {ins.scheduledAt && ` · ${new Date(ins.scheduledAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'short' })}`}
+                          </div>
+                        )}
+                        {!ins.inspector && ins.status === 'REQUESTED' && (
+                          <div style={{ fontSize: 12, color: 'var(--n-muted)', marginTop: 4 }}>An inspector will be assigned within 24 hours.</div>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
+                        <span className="n-chip" style={{ background: sc.bg, color: sc.color, borderColor: 'transparent' }}>{sc.label}</span>
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          <span className="n-display" style={{ fontSize: 16 }}>₨ {ins.feeAmount.toLocaleString()}</span>
+                          <Link href={`/property/${ins.listing.id}`} className="n-btn ghost sm">Property</Link>
+                          {ins.status === 'COMPLETED' && ins.checklistItems.length > 0 && (
+                            <button
+                              onClick={() => setExpandedReport(isExpanded ? null : ins.id)}
+                              className="n-btn ghost sm"
+                            >
+                              {isExpanded ? 'Hide report' : 'View report'}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
+
+                    {/* Expanded inspection report */}
+                    {isExpanded && ins.checklistItems.length > 0 && (
+                      <div style={{ borderTop: '1px solid var(--n-line)', padding: '16px 20px' }}>
+                        <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12 }}>
+                          Inspection report
+                          {ins.completedAt && (
+                            <span className="n-mono" style={{ fontWeight: 400, color: 'var(--n-muted)', fontSize: 11, marginLeft: 10 }}>
+                              Completed {new Date(ins.completedAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ display: 'grid', gap: 8 }}>
+                          {ins.checklistItems.map(item => (
+                            <div key={item.id} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '10px 14px', borderRadius: 8, background: 'var(--n-surface-2)' }}>
+                              <span className="n-chip" style={{
+                                flexShrink: 0,
+                                background: item.status === 'PASS' ? 'color-mix(in oklab, #22c55e 15%, transparent)' : item.status === 'FLAG' ? 'color-mix(in oklab, var(--n-warn) 18%, transparent)' : 'color-mix(in oklab, var(--n-danger) 12%, transparent)',
+                                color: item.status === 'PASS' ? '#16a34a' : item.status === 'FLAG' ? 'var(--n-warn)' : 'var(--n-danger)',
+                                borderColor: 'transparent', fontSize: 11,
+                              }}>
+                                {item.status}
+                              </span>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: 500, fontSize: 13 }}>{item.category}</div>
+                                {item.notes && <div style={{ fontSize: 12, color: 'var(--n-muted)', marginTop: 3 }}>{item.notes}</div>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}

@@ -121,7 +121,13 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
   const [reviewDone, setReviewDone] = useState(false);
 
   // Payment processing state
-  const [inspStep, setInspStep] = useState<'form' | 'processing' | 'done'>('form');
+  const [inspStep, setInspStep] = useState<'form' | 'credentials' | 'processing' | 'done'>('form');
+  const [inspCredPhone, setInspCredPhone] = useState('');
+  const [inspCredPin, setInspCredPin] = useState('');
+  const [inspCardNum, setInspCardNum] = useState('');
+  const [inspCardExp, setInspCardExp] = useState('');
+  const [inspCardCvv, setInspCardCvv] = useState('');
+  const [inspCredErr, setInspCredErr] = useState('');
 
   useEffect(() => {
     fetch(`/api/listings/${id}`)
@@ -207,11 +213,40 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
     setTimeout(() => { setViewModal(false); setViewDone(false); setViewDate(''); setViewNote(''); }, 2000);
   }
 
-  async function requestInspection() {
+  function goToCredentials() {
+    setInspCredErr('');
+    setInspStep('credentials');
+  }
+
+  async function submitPayment() {
+    // Validate credentials
+    if (inspGateway !== 'CARD') {
+      if (!inspCredPhone.match(/^(0?3\d{9}|\+923\d{9})$/)) {
+        setInspCredErr('Enter a valid Pakistani mobile number.');
+        return;
+      }
+      if (inspCredPin.length < 4) {
+        setInspCredErr('Enter your 4–6 digit PIN.');
+        return;
+      }
+    } else {
+      if (inspCardNum.replace(/\s/g, '').length < 16) {
+        setInspCredErr('Enter a valid 16-digit card number.');
+        return;
+      }
+      if (!inspCardExp.match(/^\d{2}\/\d{2}$/)) {
+        setInspCredErr('Enter expiry as MM/YY.');
+        return;
+      }
+      if (inspCardCvv.length < 3) {
+        setInspCredErr('Enter a valid CVV.');
+        return;
+      }
+    }
+    setInspCredErr('');
     setInspSending(true);
     setInspStep('processing');
-    // Simulate gateway handoff delay (1.4s) then fire real API call
-    await new Promise(r => setTimeout(r, 1400));
+    await new Promise(r => setTimeout(r, 2200));
     await fetch('/api/inspection-requests', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -219,7 +254,12 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
     });
     setInspSending(false);
     setInspStep('done');
-    setTimeout(() => { setInspModal(false); setInspStep('form'); }, 2400);
+    setTimeout(() => {
+      setInspModal(false);
+      setInspStep('form');
+      setInspCredPhone(''); setInspCredPin('');
+      setInspCardNum(''); setInspCardExp(''); setInspCardCvv('');
+    }, 2800);
   }
 
   if (loading) {
@@ -680,8 +720,98 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
               <div style={{ textAlign: 'center', padding: '24px 0' }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
                 <div style={{ fontWeight: 600 }}>Payment confirmed!</div>
-                <div style={{ color: 'var(--n-muted)', fontSize: 13, marginTop: 6 }}>Inspector assigned. Report ready within 24 hours.</div>
+                <div style={{ color: 'var(--n-muted)', fontSize: 13, marginTop: 6 }}>Inspector assigned. Report ready within 3 hours.</div>
               </div>
+            ) : inspStep === 'credentials' ? (
+              <>
+                {/* Gateway branding header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 10, background: 'var(--n-surface-2)', marginBottom: 20 }}>
+                  <span style={{ width: 12, height: 12, borderRadius: '50%', background: inspGateway === 'JAZZCASH' ? '#d32f2f' : inspGateway === 'EASYPAISA' ? '#388e3c' : 'var(--n-accent)', flexShrink: 0 }} />
+                  <span style={{ fontWeight: 600, fontSize: 14 }}>{inspGateway === 'JAZZCASH' ? 'JazzCash' : inspGateway === 'EASYPAISA' ? 'Easypaisa' : 'Debit / Credit Card'}</span>
+                  <span className="n-mono" style={{ marginLeft: 'auto', fontSize: 13 }}>₨ 1,800</span>
+                </div>
+
+                {inspGateway !== 'CARD' ? (
+                  <div style={{ display: 'grid', gap: 12, marginBottom: 16 }}>
+                    <div>
+                      <div className="n-mono" style={{ color: 'var(--n-muted)', fontSize: 11, marginBottom: 6 }}>
+                        {inspGateway === 'JAZZCASH' ? 'JazzCash' : 'Easypaisa'} mobile number
+                      </div>
+                      <input
+                        type="tel"
+                        value={inspCredPhone}
+                        onChange={e => setInspCredPhone(e.target.value)}
+                        placeholder="03XX-XXXXXXX"
+                        maxLength={11}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--n-line)', background: 'var(--n-surface-2)', color: 'var(--n-ink)', fontFamily: 'inherit', fontSize: 15, outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                    <div>
+                      <div className="n-mono" style={{ color: 'var(--n-muted)', fontSize: 11, marginBottom: 6 }}>PIN</div>
+                      <input
+                        type="password"
+                        value={inspCredPin}
+                        onChange={e => setInspCredPin(e.target.value)}
+                        placeholder="4–6 digit PIN"
+                        maxLength={6}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--n-line)', background: 'var(--n-surface-2)', color: 'var(--n-ink)', fontFamily: 'inherit', fontSize: 15, letterSpacing: '0.2em', outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gap: 12, marginBottom: 16 }}>
+                    <div>
+                      <div className="n-mono" style={{ color: 'var(--n-muted)', fontSize: 11, marginBottom: 6 }}>Card number</div>
+                      <input
+                        type="text"
+                        value={inspCardNum}
+                        onChange={e => setInspCardNum(e.target.value.replace(/[^\d\s]/g, '').slice(0, 19))}
+                        placeholder="1234 5678 9012 3456"
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--n-line)', background: 'var(--n-surface-2)', color: 'var(--n-ink)', fontFamily: 'monospace', fontSize: 15, outline: 'none', boxSizing: 'border-box', letterSpacing: '0.1em' }}
+                      />
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                      <div>
+                        <div className="n-mono" style={{ color: 'var(--n-muted)', fontSize: 11, marginBottom: 6 }}>Expiry (MM/YY)</div>
+                        <input
+                          type="text"
+                          value={inspCardExp}
+                          onChange={e => {
+                            let v = e.target.value.replace(/[^\d]/g, '').slice(0, 4);
+                            if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+                            setInspCardExp(v);
+                          }}
+                          placeholder="MM/YY"
+                          maxLength={5}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--n-line)', background: 'var(--n-surface-2)', color: 'var(--n-ink)', fontFamily: 'monospace', fontSize: 15, outline: 'none', boxSizing: 'border-box' }}
+                        />
+                      </div>
+                      <div>
+                        <div className="n-mono" style={{ color: 'var(--n-muted)', fontSize: 11, marginBottom: 6 }}>CVV</div>
+                        <input
+                          type="password"
+                          value={inspCardCvv}
+                          onChange={e => setInspCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                          placeholder="•••"
+                          maxLength={4}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--n-line)', background: 'var(--n-surface-2)', color: 'var(--n-ink)', fontFamily: 'monospace', fontSize: 15, outline: 'none', boxSizing: 'border-box' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {inspCredErr && (
+                  <div style={{ fontSize: 13, color: 'var(--n-danger)', marginBottom: 12 }}>{inspCredErr}</div>
+                )}
+
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={() => setInspStep('form')} className="n-btn ghost" style={{ flex: 1, justifyContent: 'center' }}>Back</button>
+                  <button onClick={submitPayment} disabled={inspSending} className="n-btn accent" style={{ flex: 2, justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Icon name="shield" /> Confirm payment
+                  </button>
+                </div>
+              </>
             ) : (
               <>
                 <div style={{ marginBottom: 16 }}>
@@ -715,11 +845,10 @@ export default function PropertyDetail({ params }: { params: Promise<{ id: strin
                   })}
                 </div>
 
-
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => setInspModal(false)} className="n-btn ghost" style={{ flex: 1, justifyContent: 'center' }}>Cancel</button>
-                  <button onClick={requestInspection} disabled={inspSending} className="n-btn accent" style={{ flex: 2, justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    {inspSending ? 'Processing…' : <><Icon name="stamp" /> Pay &amp; request</>}
+                  <button onClick={goToCredentials} className="n-btn accent" style={{ flex: 2, justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Icon name="stamp" /> Continue to payment
                   </button>
                 </div>
               </>

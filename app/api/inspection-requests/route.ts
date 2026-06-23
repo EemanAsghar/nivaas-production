@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
 
   // Schedule for tomorrow 10 am — realistic next-business-day assignment
   // For demo the auto-complete fires as soon as scheduledAt passes (2 min from now)
-  const scheduledAt = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes for demo speed
+  const scheduledAt = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3-hour minimum inspection window
 
   const request = await prisma.inspectionRequest.create({
     data: {
